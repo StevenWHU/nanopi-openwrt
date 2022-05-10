@@ -95,6 +95,7 @@ jobs:
           df -h .
           make package/clean
           df -h .
+      
       - name: Build and deploy packages
         timeout-minutes: 1440
         run: |
@@ -113,6 +114,7 @@ jobs:
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
+      
       - name: Clean build cache
         if: ${{ github.event.client_payload.package_clean == 'true' }}
         run: |
@@ -289,12 +291,18 @@ jobs:
           cd $GITHUB_WORKSPACE/release/ && md5sum $DEVICE-with-docker.img.gz > $DEVICE-with-docker.img.gz.md5
           gzip -dc $DEVICE-with-docker.img.gz | md5sum | sed "s/-/$DEVICE-with-docker.img/" > $DEVICE-with-docker.img.md5
 
-      - name: Upload release asset
-        uses: svenstaro/upload-release-action@v2
+#       - name: Upload release asset
+#         uses: svenstaro/upload-release-action@v2
+#         with:
+#           repo_token: ${{ secrets.GITHUB_TOKEN }}
+#           file: ./release/*
+#           tag: ${{env.strDate}}
+#           file_glob: true
+#           overwrite: true
+#           release_name: ${{env.strDate}} 自动发布
+      
+      - name : Upload artifact
+        uses: actions/upload-artifact@master
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./release/*
-          tag: ${{env.strDate}}
-          file_glob: true
-          overwrite: true
-          release_name: ${{env.strDate}} 自动发布
+          name: OpenWrt
+          path: openwrt/bin
